@@ -9,6 +9,9 @@ function SetOutgoingMessage (Message: string) {
         basic.showString(Outgoing_Message)
     }
 }
+input.onButtonPressed(Button.AB, function () {
+    radio.sendString(Outgoing_Message)
+})
 radio.onReceivedString(function (receivedString) {
     message = receivedString
     basic.showString("" + (Alphabet[Morse.indexOf(message)]))
@@ -17,7 +20,7 @@ input.onButtonPressed(Button.B, function () {
     SetOutgoingMessage("" + Outgoing_Message + "-")
 })
 input.onGesture(Gesture.Shake, function () {
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 2; index++) {
         basic.showLeds(`
             # . . . .
             . # . . .
