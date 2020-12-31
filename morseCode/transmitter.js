@@ -3,22 +3,35 @@ input.onButtonPressed(Button.A, function () {
 })
 function SetOutgoingMessage (Message: string) {
     Outgoing_Message = Message
-    if (Morse.indexOf(Outgoing_Message) != 0) {
+    TranslateMorseToLetter(Outgoing_Message)
+}
+input.onButtonPressed(Button.AB, function () {
+    playMorse(Outgoing_Message)
+    radio.sendString(Outgoing_Message)
+    Outgoing_Message = ""
+})
+radio.onReceivedString(function (receivedString) {
+    basic.showLeds(`
+        . . # . #
+        . # # # .
+        # # # # #
+        . # . # .
+        . # . # .
+        `)
+    message = receivedString
+    basic.showString(receivedString)
+    TranslateMorseToLetter(message)
+})
+input.onButtonPressed(Button.B, function () {
+    SetOutgoingMessage("" + Outgoing_Message + "-")
+})
+function TranslateMorseToLetter (MorseMessage: string) {
+    if (Morse.indexOf(Outgoing_Message) != -1) {
         basic.showString("" + (Alphabet[Morse.indexOf(Outgoing_Message)]))
     } else {
         basic.showString(Outgoing_Message)
     }
 }
-input.onButtonPressed(Button.AB, function () {
-    radio.sendString(Outgoing_Message)
-})
-radio.onReceivedString(function (receivedString) {
-    message = receivedString
-    basic.showString("" + (Alphabet[Morse.indexOf(message)]))
-})
-input.onButtonPressed(Button.B, function () {
-    SetOutgoingMessage("" + Outgoing_Message + "-")
-})
 input.onGesture(Gesture.Shake, function () {
     for (let index = 0; index < 2; index++) {
         basic.showLeds(`
@@ -33,7 +46,7 @@ input.onGesture(Gesture.Shake, function () {
             . . . # .
             . . # . .
             . # . . .
-            # . . . .
+            # . . # .
             `)
         Outgoing_Message = ""
     }
@@ -45,6 +58,16 @@ input.onGesture(Gesture.Shake, function () {
         . . . . .
         `)
 })
+function playMorse (MorseCode: string) {
+    for (let value of MorseCode) {
+        if (value == "-") {
+            music.playTone(262, music.beat(BeatFraction.Whole))
+        } else {
+            music.playTone(262, music.beat(BeatFraction.Quarter))
+        }
+        music.rest(music.beat(BeatFraction.Quarter))
+    }
+}
 let message = ""
 let Outgoing_Message = ""
 let Morse: string[] = []
